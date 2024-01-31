@@ -3,6 +3,7 @@ from enum import Enum
 
 
 class TagTypes(Enum):
+    # Define different types of tags
     CONTENT_TYPE = "CONTENT TYPE"
     CONTENT_TYPE_V2 = "CONTENT TYPE V2"
     POPULARITY = "HIT POTENTIAL"
@@ -29,6 +30,7 @@ class TagTypes(Enum):
 
     @staticmethod
     def getList():
+        # Get a list of all tag values
         return [tag.value for tag in TagTypes]
 
 
@@ -63,6 +65,7 @@ class TagContent:
 
     @staticmethod
     def getKeyList(tag_type):
+        # Get the list of keys for a specific tag type
         return TagContent.CONTENT[tag_type]
 
 

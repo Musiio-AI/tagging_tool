@@ -21,3 +21,6 @@ build/
 # Virtual environments
 venv/
 env/
+
+# Tagging tool outputs
+test_files/

@@ -54,38 +54,49 @@ def checkValidTags(tags_types):
 
     return tags_types
 
-
 def writeTags(csv_writer, tags_path, file, keys):
     """
     Opens a given json file, checks through the given tag types, and writes it to the CSV file
+
     :param csv_writer: csv writer object
     :param tags_path: string - The path where tag json files are stored
     :param file: file - output csv file
-    :param keys:
-    :return:
+    :param keys: list - list of tag types to check
+
+    :return: None
     """
 
+    # Open the json file
     with open(tags_path + '/' + file, 'r') as t:
         values = list()
 
+        # Load the content of the json file
         content = json.load(t)
         values.append(content["feature_id"])
         values.append(content["file_name"])
         tags = content["tags"]
 
+        # Iterate through the given tag types
         for key in keys:
-            tag_exits = False
+            tag_exists = False
+
+            # Iterate through the tags in the json file
             for index, tag in enumerate(tags):
                 if tag["type"] == key:
                     values.append(tag["name"])
                     values.append(tag["score"])
-                    tag_exits = True
+                    tag_exists = True
+
+                    # Remove the tag from the list to avoid duplicate entries
                     tags.pop(index)
                     break
-            if not tag_exits:
+
+            # If the tag type doesn't exist, append empty values
+            if not tag_exists:
                 values.append("")
                 values.append("")
 
+        # Write the values to the CSV file
         csv_writer.writerow(values)
 
 
@@ -138,8 +149,14 @@ def sortTags(tags_path, tags_csv, tags_types):
             writeTags(csv_writer, tags_path, file, keys)
 
 
-if __name__ == '__main__':
+# This code block is the main entry point of the script.
+# It uses the argparse module to parse command line arguments.
+# The arguments include:
+# - --tags-path: The path to the folder containing tags
+# - --tags-csv: The path to where the CSV file will be written (default is 'csv')
+# - --tags-types: The type of tags to extract from each file (default is TAGS constant)
 
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate CSV File Containing Tags')
 
     parser.add_argument('--tags-path', dest='tags_path',
@@ -153,4 +170,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # Calls the sortTags function with the provided command line arguments
     sortTags(tags_path=args.tags_path, tags_csv=args.tags_csv, tags_types=args.tags_types)

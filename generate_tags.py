@@ -24,10 +24,10 @@ FAILED_DETAILS_FILE = "log/FAILED_DETAILS-" + timestamp + ".csv"
 
 
 class Tagger:
-
+    # Initialize the Tagger class
     def __init__(self):
-        self.__completed = 0
-        self.__mutex = Lock()
+        self.__completed = 0  # Number of completed tasks
+        self.__mutex = Lock()  # Mutex lock for thread synchronization
 
     @staticmethod
     def __checkTagSelection(tag_selection):
@@ -126,6 +126,7 @@ class Tagger:
                 UPLOAD_URL = UPLOAD_URLS['audio_link']
                 logger.debug('UPLOAD: Audio link {}'.format(data))
 
+        # post request to the upload url with file or json & api key
         response = requests.post(UPLOAD_URL, files=file, json=json, auth=(api_key, ""))
         json_data = response.json()
         if response.status_code != 200:
@@ -135,6 +136,7 @@ class Tagger:
 
         logger.debug('UPLOAD: Got response {}'.format(json_data))
         feature_id = json_data["id"]
+        # return the track id
         return feature_id
 
     @retry(stop=stop_after_attempt(N_RETRIES), wait=wait_exponential(multiplier=2, min=4, max=60),
@@ -177,6 +179,7 @@ class Tagger:
          """
 
         try:
+            # call the upload function to get the feature id
             feature_id = self.__uploadFile(file_name, api_key)
         except Exception as e:
             with codecs.open(FAILED_DETAILS_FILE, "a", "utf-8") as file:
@@ -184,9 +187,11 @@ class Tagger:
             with codecs.open(FAILED_FILE, "a", "utf-8") as file:
                 file.write(file_name + "\n")
                 return 0
+        # get the tags for the feature id
         if feature_id:
             out_content = {"tags": None, "file_name": None, "feature_id": None}
             try:
+                # call the tag function to get the tags
                 tags = self.__tagFile(feature_id, tag_selection, api_key)
                 out_content["tags"] = tags
             except Exception as e:
@@ -224,6 +229,7 @@ class Tagger:
          :param api_key: str - Your API key provided by Musiio
          """
 
+        # Set the number of processes to use (5 set in config.json by default)
         n_processes = N_PROCESSES
         if TAGGING_API == 'TEST':
             logger.debug("Test API is used: set n_processes to 1.")
@@ -231,9 +237,12 @@ class Tagger:
         elif len(file_list) < N_PROCESSES:
             logger.debug("Limit n_processes to {} based of the number of files to process.".format(len(file_list)))
             n_processes = len(file_list)
-
+        # Create a ThreadPool to tag the files
         with ThreadPool(n_processes) as pool:
+            # Create a partial function to pass the destination path, tag selection, and api key to the processFile function
             process = partial(self.__processFile, destination_path, tag_selection, api_key)
+            # apply the process function to each file in the file list
+            # _ is a discarded variable that is not used
             _ = pool.map(process, file_list)
 
     def tagFilesTask(self, source_path, destination_path, tag_selection=None, api_key=None):
@@ -272,13 +281,18 @@ class Tagger:
         if type(tag_selection) == ValueError:
             return ValueError(tag_selection)
 
+        # call the tagFiles function to tag the files
         self.__tagFiles(files, destination_path, tag_selection, api_key)
 
 
+
+# Check if the current module is being run as the main program
 if __name__ == '__main__':
 
+    # Create an argument parser object
     parser = argparse.ArgumentParser(description='Sort Tags')
 
+    # Add command-line arguments
     parser.add_argument('--source-path', dest='source_path',
                         help='The path to the folder containing tracks to be tagged, '
                              'or a csv with URLs/local path to the tracks.')
@@ -289,8 +303,11 @@ if __name__ == '__main__':
     parser.add_argument('--tag-selection', nargs='+', dest='tag_selection', default=TAGS,
                         help='The type of tags to tag each audio file for.')
 
+    # Parse the command-line arguments
     args = parser.parse_args()
 
+    # Create an instance of the Tagger class
     tagger = Tagger()
 
+    # Call the tagFilesTask method with the provided arguments
     tagger.tagFilesTask(source_path=args.source_path, destination_path=args.destination_path, tag_selection=args.tag_selection)
