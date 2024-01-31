@@ -1,7 +1,7 @@
 from utils.config_helper import TAGGING_API
 from enum import Enum
 
-
+# The TagTypes class lists the valid tags that can be requested
 class TagTypes(Enum):
     # Define different types of tags
     CONTENT_TYPE = "CONTENT TYPE"
@@ -33,7 +33,7 @@ class TagTypes(Enum):
         # Get a list of all tag values
         return [tag.value for tag in TagTypes]
 
-
+# The tagContent class defined the tag headers and the max number of tags returned by the API for every tag type
 class TagContent:
     CONTENT = {
         TagTypes.CONTENT_TYPE: [("CONTENT TYPE", 1), ("QUALITY", 1)],
@@ -68,7 +68,7 @@ class TagContent:
         # Get the list of keys for a specific tag type
         return TagContent.CONTENT[tag_type]
 
-
+# define the valid tags that can be requested
 VALID_TAGS = TagTypes.getList()
 
 if TAGGING_API == 'PRODUCTION':
