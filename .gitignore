@@ -24,3 +24,6 @@ env/
 
 # Tagging tool outputs
 test_files/
+test_csv/
+test_json/
+log/
