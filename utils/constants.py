@@ -33,7 +33,7 @@ class TagTypes(Enum):
         # Get a list of all tag values
         return [tag.value for tag in TagTypes]
 
-# The tagContent class defined the tag headers and the max number of tags returned by the API for every tag type
+# The tagContent class defines the tag headers and the max number of tags returned by the API for every tag type
 class TagContent:
     CONTENT = {
         TagTypes.CONTENT_TYPE: [("CONTENT TYPE", 1), ("QUALITY", 1)],
