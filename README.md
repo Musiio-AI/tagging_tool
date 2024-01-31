@@ -2,6 +2,7 @@
 
 
 **Python version:** 3.6.8
+
 `generate_tags.py`
 tag audio tracks located in a given folder and save tags in .json format for each track.
 
