@@ -14,7 +14,7 @@ update the values of 'KEY' and 'BASE_URL' with your Musiio API Key and API Url.
 
 
 ```
-git clone https://USERNAME@bitbucket.org/musiio/tagging_tool.git
+git clone https://github.com/Musiio-AI/tagging_tool.git
 
 cd project root folder
 
